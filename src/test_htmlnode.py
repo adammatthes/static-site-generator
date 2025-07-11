@@ -1,6 +1,6 @@
 import unittest
 
-from htmlnode import HTMLNode, LeafNode
+from htmlnode import HTMLNode, LeafNode, ParentNode
 
 placeholder = "This is some text"
 
@@ -32,9 +32,22 @@ class TestLeafNode(unittest.TestCase):
 
     def test_leaf_to_html(self):
         node = LeafNode('p', "This is a leaf", None, None)
-        self.assertEquals(node.to_html(), "<p>This is a leaf</p>")
+        self.assertEqual(node.to_html(), "<p>This is a leaf</p>")
 
     
     def test_leaf_to_raw_text(self):
         node = LeafNode(None, "This is a leaf", None, None)
-        self.assertEquals(node.to_html(), "This is a leaf")
+        self.assertEqual(node.to_html(), "This is a leaf")
+
+
+class TestParentNode(unittest.TestCase):
+    def test_to_html_with_children(self):
+        child_node = LeafNode("span", "child")
+        parent_node = ParentNode("div", [child_node])
+        self.assertEqual(parent_node.to_html(), "<div><span>child</span></div>")
+
+    def test_to_html_with_grandchildren(self):
+        grandchild_node = LeafNode("b", "grandchild")
+        child_node = ParentNode("span", [grandchild_node])
+        parent_node = ParentNode("div", [child_node])
+        self.assertEqual(parent_node.to_html(), "<div><span><b>grandchild</b></span></div>")
