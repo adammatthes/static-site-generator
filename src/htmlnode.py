@@ -21,3 +21,18 @@ class HTMLNode():
 
     def props_to_html(self):
         return ''.join(f' {k}={v}' for k, v in self.props)
+
+
+class LeafNode(HTMLNode):
+    def __init__(self, tag, value, children=None, props=None):
+        if children is not None or value is None:
+            raise ValueError("Leaf Node cannot have children")
+        super().__init__(tag, value, children, props)
+
+    def to_html(self):
+        if not self.value:
+            raise ValueError
+        if not self.tag:
+            return self.value
+        return f'<{self.tag}{" " + self.props_to_html() if self.props is not None else ""}>{self.value}</{self.tag}>'
+           
