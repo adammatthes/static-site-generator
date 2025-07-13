@@ -1,6 +1,6 @@
 import unittest
 from textnode import TextNode, TextType
-from splitdelimeter import split_nodes_delimeter
+from splitdelimeter import split_nodes_delimeter, iterative_split
 
 class TestSplitDelimeter(unittest.TestCase):
     def test_single_embed(self):
@@ -53,3 +53,11 @@ class TestSplitDelimeter(unittest.TestCase):
         print(new_nodes)
         self.assertEqual(len(new_nodes), 4)
         self.assertEqual([n.text_type for n in new_nodes], [TextType.PLAIN, TextType.LINK, TextType.PLAIN, TextType.LINK])
+
+    def test_iterative_split(self):
+        text = "Testing if _I_ can parse **all** text `types` with [one](https://www.functioncall.com) ![placeholder image](https://www.example.com)"
+        node = TextNode(text, TextType.PLAIN, '')
+        new_nodes = iterative_split([node])
+        print(new_nodes)
+        self.assertEqual(len(new_nodes), 10)
+        self.assertEqual([n.text_type for n in new_nodes], [TextType.PLAIN, TextType.ITALIC, TextType.PLAIN, TextType.BOLD, TextType.PLAIN, TextType.CODE, TextType.PLAIN, TextType.LINK, TextType.PLAIN, TextType.IMAGE])
