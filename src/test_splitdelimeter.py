@@ -17,13 +17,39 @@ class TestSplitDelimeter(unittest.TestCase):
         self.assertEqual([n.text_type for n in new_nodes], [TextType.PLAIN, TextType.ITALIC, TextType.PLAIN, TextType.BOLD, TextType.PLAIN])
 
     def test_image_extract(self):
-        node = TextNode("Check out ![my dog](www.cuteanimals.com)", TextType.PLAIN, '')
+        node = TextNode("Check out ![my dog](https://www.cuteanimals.com)", TextType.PLAIN, '')
         new_nodes = split_nodes_delimeter([node], '!', TextType.IMAGE)
         self.assertEqual(len(new_nodes), 2)
         self.assertEqual([n.text_type for n in new_nodes], [TextType.PLAIN, TextType.IMAGE])
 
     def test_link_extract(self):
-        node = TextNode("Follow my socials [here](www.link.tr)", TextType.PLAIN, '')
+        node = TextNode("Follow my socials [here](https://www.link.tr)", TextType.PLAIN, '')
         new_nodes = split_nodes_delimeter([node], '[', TextType.LINK)
         self.assertEqual(len(new_nodes), 2)
         self.assertEqual([n.text_type for n in new_nodes], [TextType.PLAIN, TextType.LINK])
+
+    def test_split_images(self):
+        node = TextNode(
+                "This is text with an ![image](https://i.imgur.com/zjjcJKZ.png) and another ![second image](https://i.imgur.com/3elNhQu.png)",
+                TextType.PLAIN, ''
+                )
+        new_nodes = split_nodes_delimeter([node], '!', TextType.IMAGE)
+        self.assertListEqual(
+            [
+                TextNode("This is text with an ", TextType.PLAIN, ''),
+                TextNode("image", TextType.IMAGE, "https://i.imgur.com/zjjcJKZ.png"),
+                TextNode(" and another ", TextType.PLAIN, ''),
+                TextNode(
+                    "second image", TextType.IMAGE, "https://i.imgur.com/3elNhQu.png"
+                ),
+            ],
+            new_nodes,
+        )
+
+    def test_two_links(self):
+        text = "Here is a [link](https://www.example.com) and here is [another](https://www.google.com)"
+        node = TextNode(text, TextType.PLAIN, '')
+        new_nodes = split_nodes_delimeter([node], '[', TextType.LINK)
+        print(new_nodes)
+        self.assertEqual(len(new_nodes), 4)
+        self.assertEqual([n.text_type for n in new_nodes], [TextType.PLAIN, TextType.LINK, TextType.PLAIN, TextType.LINK])

@@ -4,7 +4,7 @@ import re
 def split_image_node(text):
     new_nodes = []
 
-    segments = re.findall(r'\!\[.+\]\(.+\)|[^\!\[\]\(\)]+', text)
+    segments = re.findall('\!\[[\w\s]+\]\(https?\:\/\/[\w\.\/]+\)|[^\!\[\]\(\)\.\/\:]+', text)
 
     for segment in segments:
         if segment.startswith('!'):
@@ -22,7 +22,7 @@ def split_image_node(text):
 def split_link_node(text):
     new_nodes = []
 
-    segments = re.findall(r'\[.+\]\(.+\)|[^\[\]\(\)]+', text)
+    segments = re.findall('\[[\w\s]+\]\(https?\:\/\/[\w\.\/]+\)|[^\!\[\]\(\)\.\/\:]+', text)
 
     for segment in segments:
         if segment.startswith('['):
