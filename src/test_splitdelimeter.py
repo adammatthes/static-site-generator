@@ -50,7 +50,6 @@ class TestSplitDelimeter(unittest.TestCase):
         text = "Here is a [link](https://www.example.com) and here is [another](https://www.google.com)"
         node = TextNode(text, TextType.PLAIN, '')
         new_nodes = split_nodes_delimeter([node], '[', TextType.LINK)
-        print(new_nodes)
         self.assertEqual(len(new_nodes), 4)
         self.assertEqual([n.text_type for n in new_nodes], [TextType.PLAIN, TextType.LINK, TextType.PLAIN, TextType.LINK])
 
@@ -58,6 +57,5 @@ class TestSplitDelimeter(unittest.TestCase):
         text = "Testing if _I_ can parse **all** text `types` with [one](https://www.functioncall.com) ![placeholder image](https://www.example.com)"
         node = TextNode(text, TextType.PLAIN, '')
         new_nodes = iterative_split([node])
-        print(new_nodes)
         self.assertEqual(len(new_nodes), 10)
         self.assertEqual([n.text_type for n in new_nodes], [TextType.PLAIN, TextType.ITALIC, TextType.PLAIN, TextType.BOLD, TextType.PLAIN, TextType.CODE, TextType.PLAIN, TextType.LINK, TextType.PLAIN, TextType.IMAGE])
