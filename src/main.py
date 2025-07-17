@@ -2,6 +2,8 @@ from textnode import TextNode, TextType
 import subprocess
 import os
 import shutil
+from markdownblocks import markdown_to_html_alt
+
 
 def copy_static_to_public():
     files_to_delete = []
@@ -42,7 +44,9 @@ def copy_static_to_public():
 
 def main():
 
-    copy_static_to_public()
+    with open('content/index.md', 'r') as markdown_file:
+        print(markdown_to_html_alt(markdown_file.read()))
+    #copy_static_to_public()
 
 if __name__ == "__main__":
     main()
