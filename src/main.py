@@ -3,11 +3,18 @@ import subprocess
 import os
 import shutil
 from markdownblocks import markdown_to_html_alt, extract_title
+import sys
+
+try:
+    basepath = sys.argv[1]
+except IndexError:
+    basepath = '/'
+
 
 
 def copy_static_to_public():
     files_to_delete = []
-    for p, d, f in os.walk('public'):
+    for p, d, f in os.walk('docs'):
         for f1 in f:
             files_to_delete.append(f'{p}/{f1}')
 
@@ -19,10 +26,10 @@ def copy_static_to_public():
     new_dirs = []
     for p, d, f in os.walk('static'):
         for d1 in d:
-            new_dirs.append(f'{p.replace("static", "public")}/{d1}')
+            new_dirs.append(f'{p.replace("static", "docs")}/{d1}')
         for f1 in f:
             files_to_copy.append(f'{p}/{f1}')
-            new_file_paths.append(f'{p.replace("static", "public")}/{f1}')
+            new_file_paths.append(f'{p.replace("static", "docs")}/{f1}')
 
     for nd in new_dirs:
         try:
@@ -55,6 +62,9 @@ def generate_page(from_path, template_path, dest_path):
     template_content = template_content.replace('{{ Title }}', page_title)\
                         .replace('{{ Content }}', html_result)
 
+    global basepath
+    html_result = html_result.replace('href="/', f'href="{basepath}').replace('src="/', f'src="{basepath}')
+
 
     with open(dest_path, 'w') as html_file:
         html_file.write(html_result)
@@ -63,21 +73,20 @@ def generate_page(from_path, template_path, dest_path):
 def main():
 
     try:
-        subprocess.run(['rm', '-rf', 'public/*'])
+        subprocess.run(['rm', '-rf', 'docs/*'])
     except Exception as e:
         print(e)
 
-
-    copy_static_to_public()
+        copy_static_to_public()
 
     for p, d, f in os.walk('content'):
         try:
-            subprocess.run(['mkdir', p.replace('content', 'public')], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+            subprocess.run(['mkdir', p.replace('content', 'docs')], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
         except Exception as e:
             print(e)
         
         for f1 in f:
-            generate_page(f'{p}/{f1}', 'template.html', f'{p.replace("content", "public")}/{f1.replace("md", "html")}')
+            generate_page(f'{p}/{f1}', 'template.html', f'{p.replace("content", "docs")}/{f1.replace("md", "html")}')
 
 if __name__ == "__main__":
     main()
