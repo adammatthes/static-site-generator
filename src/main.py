@@ -2,7 +2,7 @@ from textnode import TextNode, TextType
 import subprocess
 import os
 import shutil
-from markdownblocks import markdown_to_html_alt
+from markdownblocks import markdown_to_html_alt, extract_title
 
 
 def copy_static_to_public():
@@ -39,14 +39,45 @@ def copy_static_to_public():
                 with open(new, 'w') as new_file:
                     new_file.write(content)
 
+def generate_page(from_path, template_path, dest_path):
+    print(f"Generating page from {from_path} to {dest_path}")
 
+    with open(from_path, 'r') as markdown_file:
+        markdown_content = markdown_file.read()
+
+    with open(template_path, 'r') as template_file:
+        template_content = template_file.read()
+
+    html_result = markdown_to_html_alt(markdown_content)
+
+    page_title = extract_title(markdown_content)
+
+    template_content = template_content.replace('{{ Title }}', page_title)\
+                        .replace('{{ Content }}', html_result)
+
+
+    with open(dest_path, 'w') as html_file:
+        html_file.write(html_result)
 
 
 def main():
 
-    with open('content/index.md', 'r') as markdown_file:
-        print(markdown_to_html_alt(markdown_file.read()))
-    #copy_static_to_public()
+    try:
+        subprocess.run(['rm', '-rf', 'public/*'])
+    except Exception as e:
+        print(e)
+
+
+    copy_static_to_public()
+
+    for p, d, f in os.walk('content'):
+        try:
+            subprocess.run(['mkdir', p.replace('content', 'public')], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+        except Exception as e:
+            print(e)
+        
+        for f1 in f:
+            generate_page(f'{p}/{f1}', 'template.html', f'{p.replace("content", "public")}/{f1.replace("md", "html")}')
 
 if __name__ == "__main__":
     main()

@@ -131,8 +131,9 @@ def markdown_to_html_alt(markdown):
         length = len(tokens)
         i = 0
 
-        #print(tokens)
         while i < length:
+            tokens[i] = tokens[i].strip()
+
             if tokens[i].startswith('!') and tokens[i].endswith(')'):
                 href_start = tokens[i].find('(')
                 href_end = tokens[i].find(')')
@@ -169,6 +170,7 @@ def markdown_to_html_alt(markdown):
                 
 
             if '#' in tokens[i]:
+                tokens[i + 1] = tokens[i+1].strip()
                 num = sum([t == "#" for t in tokens[i]])
                 tokens[i] = f'<h{num}>'
                 tokens.insert(i + 2, f'</h{num}>')
@@ -235,6 +237,8 @@ def markdown_to_html_alt(markdown):
             tokens.append('</p>')
         html.append(''.join(tokens))
 
+    html.insert(0, '<html>')
+    html.append('</html>')
     return '\n'.join(html)
 
 
