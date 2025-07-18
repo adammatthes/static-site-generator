@@ -122,7 +122,7 @@ def markdown_to_html_alt(markdown):
 
     for block in blocks:
         b_type = block_to_block_type(markdown)
-        tokens = re.findall(r'[!\[].+\]\([^\)]+\)|[\*_`\>\-#]+|(?:\d\.)|[^#\*_`\>\[\]\n]+', block)
+        tokens = re.findall(r'[!\[][^\]]+\]\([^\)]+\)|[\*_`\>\-#]+|(?:\d\.)|[^#\*_`\>\[\]\n]+', block)
         tokens = list(filter(lambda x: not re.fullmatch(r'\s+', x), tokens))
 
 
@@ -131,15 +131,20 @@ def markdown_to_html_alt(markdown):
         length = len(tokens)
         i = 0
 
-        print(tokens)
+        #print(tokens)
         while i < length:
             if tokens[i].startswith('!') and tokens[i].endswith(')'):
-                open_, close = '<img>', '</img>'
-                
+                href_start = tokens[i].find('(')
+                href_end = tokens[i].find(')')
+                text_start = tokens[i].find('[')
+                text_end = tokens[i].find(']')
+                open_, close = f'<img href="{tokens[i][href_start+1:href_end]}">', '</img>'
+
                 tokens.insert(i, open_)
                 length += 1
                 tokens.append(close)
                 length += 1
+                tokens[i+1] = tokens[i+1][text_start+1:text_end]
                 break
 
             if tokens[i].startswith('[') and tokens[i].endswith(')'):
@@ -225,11 +230,9 @@ def markdown_to_html_alt(markdown):
                 length += 1
 
             i += 1
-
-        if b_type == BlockType.PARAGRAPH:
-            pass
-            #tokens.insert(0, "<p>")
-            #tokens.append("</p>")
+        if not tokens[0].startswith('<'):
+            tokens.insert(0, '<p>')
+            tokens.append('</p>')
         html.append(''.join(tokens))
 
     return '\n'.join(html)
