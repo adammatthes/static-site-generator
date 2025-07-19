@@ -237,8 +237,8 @@ def markdown_to_html_alt(markdown):
             tokens.append('</p>')
         html.append(''.join(tokens))
 
-    html.insert(0, '<html>')
-    html.append('</html>')
+    #html.insert(0, '<html>')
+    #html.append('</html>')
     return '\n'.join(html)
 
 
