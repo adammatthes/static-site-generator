@@ -34,12 +34,16 @@ def copy_static_to_public():
     for nd in new_dirs:
         try:
             subprocess.run(['mkdir', nd], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
-        except:
-            pass
+        except Exception as e:
+            print(e)
 
     for old, new in zip(files_to_copy, new_file_paths):
-        if old.endswith(('jpg', 'png')):
-            shutil.copy(old, new)
+        if "png" in old or "jpg" in old:
+            try:
+                print(f"attempting to copy {old}")
+                shutil.copy(old, new)
+            except Exception as e:
+                print(e)
         else:
             with open(old, 'r') as old_file:
                 content = old_file.read()
@@ -59,15 +63,16 @@ def generate_page(from_path, template_path, dest_path):
 
     page_title = extract_title(markdown_content)
 
-    template_content = template_content.replace('{{ Title }}', page_title)\
-                        .replace('{{ Content }}', html_result)
-
     global basepath
     html_result = html_result.replace('href="/', f'href="{basepath}').replace('src="/', f'src="{basepath}')
 
+    template_content = template_content.replace('{{ Title }}', page_title)\
+                        .replace('{{ Content }}', html_result)
+
+    
 
     with open(dest_path, 'w') as html_file:
-        html_file.write(html_result)
+        html_file.write(template_content)
 
 
 def main():
@@ -77,7 +82,7 @@ def main():
     except Exception as e:
         print(e)
 
-        copy_static_to_public()
+    copy_static_to_public()
 
     for p, d, f in os.walk('content'):
         try:
@@ -87,6 +92,8 @@ def main():
         
         for f1 in f:
             generate_page(f'{p}/{f1}', 'template.html', f'{p.replace("content", "docs")}/{f1.replace("md", "html")}')
+
+
 
 if __name__ == "__main__":
     main()

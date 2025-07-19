@@ -139,13 +139,13 @@ def markdown_to_html_alt(markdown):
                 href_end = tokens[i].find(')')
                 text_start = tokens[i].find('[')
                 text_end = tokens[i].find(']')
-                open_, close = f'<img href="{tokens[i][href_start+1:href_end]}">', '</img>'
+                open_, close = f'<img src="{tokens[i][href_start+1:href_end]}" alt="{tokens[i][text_start+1:text_end]}">', '</img>'
 
-                tokens.insert(i, open_)
-                length += 1
-                tokens.append(close)
-                length += 1
-                tokens[i+1] = tokens[i+1][text_start+1:text_end]
+                tokens[i] = open_
+                #length += 1
+                #tokens.append(close)
+                #length += 1
+                #tokens[i+1] = tokens[i+1][text_start+1:text_end]
                 break
 
             if tokens[i].startswith('[') and tokens[i].endswith(')'):
