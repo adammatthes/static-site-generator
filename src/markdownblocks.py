@@ -139,7 +139,7 @@ def markdown_to_html_alt(markdown):
                 href_end = tokens[i].find(')')
                 text_start = tokens[i].find('[')
                 text_end = tokens[i].find(']')
-                open_, close = f'<img src="{tokens[i][href_start+1:href_end]}" alt="{tokens[i][text_start+1:text_end]}">', '</img>'
+                open_, close = f'<img src="{tokens[i][href_start+1:href_end]}" alt="{tokens[i][text_start+1:text_end]}"/>', '</img>'
 
                 tokens[i] = open_
                 #length += 1
